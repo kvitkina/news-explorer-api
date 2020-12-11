@@ -13,12 +13,12 @@ router.post('/articles', celebrate({
     link: Joi.string().required().regex(/^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*$/),
     image: Joi.string().required(),
   }),
-}),saveArticle);
+}), saveArticle);
 
 router.delete('/articles/:articleId', celebrate({
   params: Joi.object().keys({
     cardId: Joi.string().alphanum().length(24),
   }),
-}),removeArticle);
+}), removeArticle);
 
 module.exports = router;

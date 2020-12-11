@@ -1,42 +1,42 @@
-const User = require('../models/user');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { SOLT_ROUND } = require('../configs/index');
+const bcrypt = require('bcrypt');
+const User = require('../models/user');
+const { SOLT_ROUND } = require('../utils/configs');
+
 const { NODE_ENV, JWT_SECRET } = process.env;
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
 
-const getUserInfo = (req, res,next) => {
-  console.log(req.user._id)
+const getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
-  .orFail(() => {
-    throw new NotFoundError('Нет пользователя с таким id');
-  })
-  .then((user) => res.send(user))
-  .catch((err) => {
-    if (err.kind === 'ObjectId') {
-      const validationError = new BadRequestError('Не валидный id');
-      next(validationError);
-    }
-    if (err.statusCode === 404) {
-      const notFoundError = new NotFoundError('Карточка не найдена');
-      next(notFoundError);
-    }
-    next(err);
-  });
+    .orFail(() => {
+      throw new NotFoundError('Нет пользователя с таким id');
+    })
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        const validationError = new BadRequestError('Не валидный id');
+        next(validationError);
+      }
+      if (err.statusCode === 404) {
+        const notFoundError = new NotFoundError('Карточка не найдена');
+        next(notFoundError);
+      }
+      next(err);
+    });
 };
 
 const register = (req, res, next) => {
-  const { email, password, name} = req.body;
-  User.findOne({ email})
-  .then((user) => {
-    if(user) {
-      return res.status(409).send({ message: 'Пользователь с таким email уже зарегистрирован' });
-    }
-  });
+  const { email, password, name } = req.body;
+  User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        res.status(409).send({ message: 'Пользователь с таким email уже зарегистрирован' });
+      }
+    });
   bcrypt.hash(password, SOLT_ROUND)
     .then((hash) => User.create({
-      email, password: hash, name
+      email, password: hash, name,
     }))
     .then((user) => res.status(201).send({ _id: user._id }))
     .catch((err) => {
@@ -45,8 +45,8 @@ const register = (req, res, next) => {
         next(validationError);
       } else {
         next(err);
-    }
-  });
+      }
+    });
 };
 
 const login = (req, res, next) => {
@@ -57,7 +57,7 @@ const login = (req, res, next) => {
         { _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
-      )
+      );
       return res.send({ token });
     })
     .catch((err) => { next(err); });
@@ -66,5 +66,5 @@ const login = (req, res, next) => {
 module.exports = {
   getUserInfo,
   register,
-  login
-}
+  login,
+};

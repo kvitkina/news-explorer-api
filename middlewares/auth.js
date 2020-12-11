@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
   if (!authorization || !authorization.startsWith('Bearer ')) {
     throw new UnauthorizedError('Ошибка авторизации');
   }
-  const token = authorization.replace('Bearer ', '');  // извлечём токен
+  const token = authorization.replace('Bearer ', ''); // извлечём токен
   let payload;
   try {
     payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
