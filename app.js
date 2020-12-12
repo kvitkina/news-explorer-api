@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const app = express();
-const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/newsdb' } = process.env;
+const { PORT = 3003, MONGO_URL = 'mongodb://localhost:27017/newsdb' } = process.env;
 const { errors } = require('celebrate');
 const helmet = require('helmet');
 const cors = require('cors');
