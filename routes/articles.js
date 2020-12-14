@@ -11,13 +11,13 @@ router.post('/articles', celebrate({
     date: Joi.string().required(),
     source: Joi.string().required(),
     link: Joi.string().required().regex(/^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*$/),
-    image: Joi.string().required(),
+    image: Joi.string().required().regex(/^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*$/),
   }),
 }), saveArticle);
 
 router.delete('/articles/:articleId', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
+    articleId: Joi.string().alphanum().length(24),
   }),
 }), removeArticle);
 

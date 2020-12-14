@@ -1,6 +1,7 @@
 const Article = require('../models/article');
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
+const ForbiddenError = require('../errors/forbidden-err');
 
 const getArticles = (req, res, next) => {
   Article.find({})
@@ -16,7 +17,7 @@ const saveArticle = (req, res, next) => {
   Article.create({
     keyword, title, text, date, source, link, image, owner,
   })
-    .then((article) => res.send(article))
+    .then((article) => res.send({ _id: article._id }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const validationError = new BadRequestError('Ошибка валидации');
@@ -30,16 +31,16 @@ const saveArticle = (req, res, next) => {
 const removeArticle = (req, res, next) => {
   const { articleId } = req.params;
   const userId = req.user._id;
-  Article.findById(articleId)
+  Article.findById(articleId).select('+owner')
     .orFail(() => {
-      throw new NotFoundError('Карточка не найдена');
+      throw new NotFoundError('Статья не найдена');
     })
     .then((article) => {
       if (article.owner.toString() === userId) {
-        Article.findByIdAndRemove(articleId)
-          .then((thisArticle) => res.send(thisArticle));
+        article.remove(articleId)
+          .then((thisArticle) => res.send({ _id: thisArticle._id }));
       } else {
-        throw new BadRequestError('Нельзя удалять чужую карточку');
+        throw new ForbiddenError('Нельзя удалять чужую статью');
       }
     })
     .catch((err) => {
@@ -48,7 +49,7 @@ const removeArticle = (req, res, next) => {
         next(validationError);
       }
       if (err.statusCode === 404) {
-        const notFoundError = new NotFoundError('Карточка не найдена');
+        const notFoundError = new NotFoundError('Статья не найдена');
         next(notFoundError);
       }
       next(err);

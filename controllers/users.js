@@ -6,6 +6,7 @@ const { SOLT_ROUND } = require('../utils/configs');
 const { NODE_ENV, JWT_SECRET } = process.env;
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
+const ConglictError = require('../errors/conflict-err');
 
 const getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
@@ -31,7 +32,7 @@ const register = (req, res, next) => {
   User.findOne({ email })
     .then((user) => {
       if (user) {
-        res.status(409).send({ message: 'Пользователь с таким email уже зарегистрирован' });
+        throw new ConglictError('Пользователь с таким email уже зарегистрирован');
       }
     });
   bcrypt.hash(password, SOLT_ROUND)
