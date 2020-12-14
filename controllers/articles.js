@@ -38,7 +38,7 @@ const removeArticle = (req, res, next) => {
     .then((article) => {
       if (article.owner.toString() === userId) {
         article.remove(articleId)
-          .then((thisArticle) => res.send({ _id: thisArticle._id }));
+          .then((thisArticle) => res.send(thisArticle));
       } else {
         throw new ForbiddenError('Нельзя удалять чужую статью');
       }
