@@ -17,7 +17,7 @@ const saveArticle = (req, res, next) => {
   Article.create({
     keyword, title, text, date, source, link, image, owner,
   })
-    .then((article) => res.send({ _id: article._id }))
+    .then((article) => res.send(article))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const validationError = new BadRequestError('Ошибка валидации');
