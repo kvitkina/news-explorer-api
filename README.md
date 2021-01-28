@@ -1,3 +1,3 @@
 # NewsExplorer
 Бекенд дипломной работы Яндекс.Практикума
-https://api.news.students.nomoredomains.rocks
+https://api.kvitkina.students.nomoredomains.rocks
