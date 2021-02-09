@@ -4,8 +4,13 @@ const BadRequestError = require('../errors/bad-request-err');
 const ForbiddenError = require('../errors/forbidden-err');
 
 const getArticles = (req, res, next) => {
-  Article.find({})
-    .then((articles) => res.send(articles))
+  Article.find({ owner: req.user._id })
+    .then((articles) => {
+      if (!articles.length) {
+        res.status(200).send([]);
+      }
+      res.send(articles);
+    })
     .catch(next);
 };
 
